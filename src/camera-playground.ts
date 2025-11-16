@@ -20,7 +20,11 @@ export class CameraPlayground {
     this.scene.background = new THREE.Color(0x1a1a2e);
 
     // 조작할 카메라 (시각화 대상)
-    this.camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+    const fov = 75; // Field of View (시야각)
+    const aspect = 1; // 종횡비
+    const near = 0.1; // 근평면
+    const far = 1000; // 원평면
+    this.camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
     this.camera.position.set(5, 5, 5);
     this.camera.lookAt(0, 0, 0);
 
@@ -28,12 +32,11 @@ export class CameraPlayground {
     this.initialRotation = this.camera.rotation.clone();
 
     // 뷰 카메라 (우리가 보는 시점)
-    this.viewCamera = new THREE.PerspectiveCamera(
-      60,
-      window.innerWidth / window.innerHeight,
-      0.1,
-      1000
-    );
+    const viewFov = 60;
+    const viewAspect = window.innerWidth / window.innerHeight;
+    const viewNear = 0.1;
+    const viewFar = 1000;
+    this.viewCamera = new THREE.PerspectiveCamera(viewFov, viewAspect, viewNear, viewFar);
     this.viewCamera.position.set(10, 10, 10);
     this.viewCamera.lookAt(0, 0, 0);
 
