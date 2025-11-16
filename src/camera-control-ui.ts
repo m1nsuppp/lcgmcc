@@ -257,7 +257,20 @@ export class CameraControlUI {
     this.addSliderListener('quat-axis-z', updateQuaternion);
     this.addSliderListener('quat-angle', updateQuaternion);
 
-    // LookAt
+    // LookAt 슬라이더 display value 업데이트
+    this.addSliderListener('target-x', () => {
+      // display value만 업데이트 (실제 LookAt은 버튼 클릭시)
+    });
+
+    this.addSliderListener('target-y', () => {
+      // display value만 업데이트 (실제 LookAt은 버튼 클릭시)
+    });
+
+    this.addSliderListener('target-z', () => {
+      // display value만 업데이트 (실제 LookAt은 버튼 클릭시)
+    });
+
+    // LookAt 적용 버튼
     const applyLookAtBtn = this.getElement<HTMLButtonElement>('#apply-lookat');
     applyLookAtBtn.addEventListener('click', () => {
       const x = parseFloat(this.getElement<HTMLInputElement>('#target-x').value);
