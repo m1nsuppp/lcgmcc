@@ -183,8 +183,8 @@ export class CameraControlUI {
 
   private attachEventListeners(): void {
     // 모드 전환
-    const modeEulerBtn = this.container.querySelector('#mode-euler') as HTMLButtonElement;
-    const modeQuatBtn = this.container.querySelector('#mode-quaternion') as HTMLButtonElement;
+    const modeEulerBtn = this.getElement<HTMLButtonElement>('#mode-euler');
+    const modeQuatBtn = this.getElement<HTMLButtonElement>('#mode-quaternion');
 
     modeEulerBtn.addEventListener('click', () => {
       this.setMode('euler');
@@ -196,52 +196,60 @@ export class CameraControlUI {
 
     // 위치 슬라이더
     this.addSliderListener('pos-x', (value) => {
-      const y = parseFloat((this.container.querySelector('#pos-y') as HTMLInputElement).value);
-      const z = parseFloat((this.container.querySelector('#pos-z') as HTMLInputElement).value);
+      const y = parseFloat(this.getElement<HTMLInputElement>('#pos-y').value);
+      const z = parseFloat(this.getElement<HTMLInputElement>('#pos-z').value);
       this.callbacks.onPositionChange(value, y, z);
     });
 
     this.addSliderListener('pos-y', (value) => {
-      const x = parseFloat((this.container.querySelector('#pos-x') as HTMLInputElement).value);
-      const z = parseFloat((this.container.querySelector('#pos-z') as HTMLInputElement).value);
+      const x = parseFloat(this.getElement<HTMLInputElement>('#pos-x').value);
+      const z = parseFloat(this.getElement<HTMLInputElement>('#pos-z').value);
       this.callbacks.onPositionChange(x, value, z);
     });
 
     this.addSliderListener('pos-z', (value) => {
-      const x = parseFloat((this.container.querySelector('#pos-x') as HTMLInputElement).value);
-      const y = parseFloat((this.container.querySelector('#pos-y') as HTMLInputElement).value);
+      const x = parseFloat(this.getElement<HTMLInputElement>('#pos-x').value);
+      const y = parseFloat(this.getElement<HTMLInputElement>('#pos-y').value);
       this.callbacks.onPositionChange(x, y, value);
     });
 
     // Euler 회전
     this.addSliderListener('euler-x', (value) => {
-      const y = parseFloat((this.container.querySelector('#euler-y') as HTMLInputElement).value);
-      const z = parseFloat((this.container.querySelector('#euler-z') as HTMLInputElement).value);
+      const y = parseFloat(this.getElement<HTMLInputElement>('#euler-y').value);
+      const z = parseFloat(this.getElement<HTMLInputElement>('#euler-z').value);
       this.callbacks.onEulerRotationChange(value, y, z);
     });
 
     this.addSliderListener('euler-y', (value) => {
-      const x = parseFloat((this.container.querySelector('#euler-x') as HTMLInputElement).value);
-      const z = parseFloat((this.container.querySelector('#euler-z') as HTMLInputElement).value);
+      const x = parseFloat(this.getElement<HTMLInputElement>('#euler-x').value);
+      const z = parseFloat(this.getElement<HTMLInputElement>('#euler-z').value);
       this.callbacks.onEulerRotationChange(x, value, z);
     });
 
     this.addSliderListener('euler-z', (value) => {
-      const x = parseFloat((this.container.querySelector('#euler-x') as HTMLInputElement).value);
-      const y = parseFloat((this.container.querySelector('#euler-y') as HTMLInputElement).value);
+      const x = parseFloat(this.getElement<HTMLInputElement>('#euler-x').value);
+      const y = parseFloat(this.getElement<HTMLInputElement>('#euler-y').value);
       this.callbacks.onEulerRotationChange(x, y, value);
     });
 
     // Quaternion 회전
     const updateQuaternion = () => {
-      const axisX = parseFloat((this.container.querySelector('#quat-axis-x') as HTMLInputElement).value);
-      const axisY = parseFloat((this.container.querySelector('#quat-axis-y') as HTMLInputElement).value);
-      const axisZ = parseFloat((this.container.querySelector('#quat-axis-z') as HTMLInputElement).value);
-      const angle = parseFloat((this.container.querySelector('#quat-angle') as HTMLInputElement).value);
+      const axisX = parseFloat(this.getElement<HTMLInputElement>('#quat-axis-x').value);
+      const axisY = parseFloat(this.getElement<HTMLInputElement>('#quat-axis-y').value);
+      const axisZ = parseFloat(this.getElement<HTMLInputElement>('#quat-axis-z').value);
+      const angle = parseFloat(this.getElement<HTMLInputElement>('#quat-angle').value);
 
-      // TODO(human): 축 벡터를 정규화하는 로직을 구현하세요
-      // 힌트: THREE.Vector3를 사용하여 (axisX, axisY, axisZ)를 정규화하고
-      // 정규화된 벡터와 라디안으로 변환한 각도를 콜백에 전달
+      // 축 벡터 정규화
+      const axis = new THREE.Vector3(axisX, axisY, axisZ);
+      const length = axis.length();
+
+      if (length === 0) {
+        // 제로 벡터는 회전할 수 없으므로 무시
+        return;
+      }
+
+      axis.normalize();
+      this.callbacks.onQuaternionRotationChange(axis, angle);
     };
 
     this.addSliderListener('quat-axis-x', updateQuaternion);
@@ -250,24 +258,24 @@ export class CameraControlUI {
     this.addSliderListener('quat-angle', updateQuaternion);
 
     // LookAt
-    const applyLookAtBtn = this.container.querySelector('#apply-lookat') as HTMLButtonElement;
+    const applyLookAtBtn = this.getElement<HTMLButtonElement>('#apply-lookat');
     applyLookAtBtn.addEventListener('click', () => {
-      const x = parseFloat((this.container.querySelector('#target-x') as HTMLInputElement).value);
-      const y = parseFloat((this.container.querySelector('#target-y') as HTMLInputElement).value);
-      const z = parseFloat((this.container.querySelector('#target-z') as HTMLInputElement).value);
+      const x = parseFloat(this.getElement<HTMLInputElement>('#target-x').value);
+      const y = parseFloat(this.getElement<HTMLInputElement>('#target-y').value);
+      const z = parseFloat(this.getElement<HTMLInputElement>('#target-z').value);
       this.callbacks.onLookAtTarget(x, y, z);
     });
 
     // Reset
-    const resetBtn = this.container.querySelector('#reset-camera') as HTMLButtonElement;
+    const resetBtn = this.getElement<HTMLButtonElement>('#reset-camera');
     resetBtn.addEventListener('click', () => {
       this.callbacks.onReset();
     });
   }
 
   private addSliderListener(id: string, callback: (value: number) => void): void {
-    const slider = this.container.querySelector(`#${id}`) as HTMLInputElement;
-    const valueSpan = this.container.querySelector(`#${id}-value`) as HTMLSpanElement;
+    const slider = this.getElement<HTMLInputElement>(`#${id}`);
+    const valueSpan = this.getElement<HTMLSpanElement>(`#${id}-value`);
 
     slider.addEventListener('input', () => {
       const value = parseFloat(slider.value);
@@ -276,15 +284,29 @@ export class CameraControlUI {
     });
   }
 
+  /**
+   * 요소를 선택하고 null 체크 수행
+   * @throws {Error} 요소를 찾을 수 없을 경우
+   */
+  private getElement<T extends Element>(selector: string): T {
+    const element = this.container.querySelector(selector) as T | null;
+
+    if (!element) {
+      throw new Error(`Element not found: ${selector}`);
+    }
+
+    return element;
+  }
+
   private setMode(mode: RotationMode): void {
     this.mode = mode;
     this.callbacks.onModeChange(mode);
 
-    const eulerControls = this.container.querySelector('#euler-controls') as HTMLDivElement;
-    const quatControls = this.container.querySelector('#quaternion-controls') as HTMLDivElement;
-    const modeEulerBtn = this.container.querySelector('#mode-euler') as HTMLButtonElement;
-    const modeQuatBtn = this.container.querySelector('#mode-quaternion') as HTMLButtonElement;
-    const modeDesc = this.container.querySelector('#mode-description') as HTMLDivElement;
+    const eulerControls = this.getElement<HTMLDivElement>('#euler-controls');
+    const quatControls = this.getElement<HTMLDivElement>('#quaternion-controls');
+    const modeEulerBtn = this.getElement<HTMLButtonElement>('#mode-euler');
+    const modeQuatBtn = this.getElement<HTMLButtonElement>('#mode-quaternion');
+    const modeDesc = this.getElement<HTMLDivElement>('#mode-description');
 
     if (mode === 'euler') {
       eulerControls.style.display = 'block';
