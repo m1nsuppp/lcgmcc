@@ -21,8 +21,8 @@ export class CameraControlUI {
     this.container = document.createElement('div');
     this.container.id = 'camera-control-panel';
     this.setupStyles();
-    this.createUI();
     document.body.appendChild(this.container);
+    this.createUI();
   }
 
   private setupStyles(): void {
